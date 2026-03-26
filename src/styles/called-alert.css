@@ -1,0 +1,141 @@
+/* ── Called Alert Overlay ──────────────────────────────────── */
+
+.called-alert-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: rgba(249, 115, 22, 0.12);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+}
+
+.dark .called-alert-overlay {
+  background: rgba(251, 146, 60, 0.1);
+}
+
+/* ── Pulse Ring ───────────────────────────────────────────── */
+
+@keyframes called-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(249, 115, 22, 0.4),
+      0 0 0 0 rgba(249, 115, 22, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 0 16px rgba(249, 115, 22, 0),
+      0 0 0 32px rgba(249, 115, 22, 0);
+  }
+}
+
+@keyframes called-pulse-dark {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(251, 146, 60, 0.4),
+      0 0 0 0 rgba(251, 146, 60, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 0 16px rgba(251, 146, 60, 0),
+      0 0 0 32px rgba(251, 146, 60, 0);
+  }
+}
+
+.called-pulse-ring {
+  animation: called-pulse 2s ease-in-out infinite;
+  border-radius: 9999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .called-pulse-ring {
+    animation: none;
+    box-shadow:
+      0 0 0 4px rgba(249, 115, 22, 0.3),
+      0 0 0 8px rgba(249, 115, 22, 0.15);
+  }
+}
+
+.dark .called-pulse-ring {
+  animation: called-pulse-dark 2s ease-in-out infinite;
+}
+
+/* ── Called Ticket Number ─────────────────────────────────── */
+
+.called-ticket-number {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--action);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 24.375rem) {
+  .called-ticket-number {
+    font-size: 5rem;
+  }
+}
+
+@media (min-width: 26.875rem) {
+  .called-ticket-number {
+    font-size: 6rem;
+  }
+}
+
+@media (min-width: 37.5rem) {
+  .called-ticket-number {
+    font-size: 7rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  .called-ticket-number {
+    font-size: 8rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .called-ticket-number {
+    font-size: 9rem;
+  }
+}
+
+/* ── Fade-in ──────────────────────────────────────────────── */
+
+@keyframes called-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.called-alert-enter {
+  animation: called-fade-in 0.4s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .called-alert-enter {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dark .called-pulse-ring {
+    animation: none;
+    box-shadow:
+      0 0 0 4px rgba(251, 146, 60, 0.3),
+      0 0 0 8px rgba(251, 146, 60, 0.15);
+  }
+}

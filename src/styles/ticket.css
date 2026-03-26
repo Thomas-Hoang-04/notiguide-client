@@ -1,0 +1,112 @@
+/* ── Ticket Card Styles ───────────────────────────────────── */
+
+.ticket-number {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 22.5rem) {
+  .ticket-number {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 24.375rem) {
+  .ticket-number {
+    font-size: 2.25rem;
+  }
+}
+
+@media (min-width: 26.875rem) {
+  .ticket-number {
+    font-size: 2.5rem;
+  }
+}
+
+@media (min-width: 37.5rem) {
+  .ticket-number {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  .ticket-number {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .ticket-number {
+    font-size: 3.5rem;
+  }
+}
+
+/* ── Position Counter Animation ───────────────────────────── */
+
+@keyframes position-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.position-animate {
+  animation: position-slide-down 0.35s ease-out;
+}
+
+/* ── Ticket Status Transitions ────────────────────────────── */
+
+@keyframes status-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.status-transition {
+  animation: status-fade-in 0.3s ease-out;
+}
+
+/* ── Skeleton Shimmer for Ticket ──────────────────────────── */
+
+@keyframes ticket-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.ticket-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 25%,
+    var(--border) 50%,
+    var(--muted) 75%
+  );
+  background-size: 200% 100%;
+  animation: ticket-shimmer 1.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .position-animate,
+  .status-transition {
+    animation: none;
+  }
+
+  .ticket-skeleton {
+    animation: none;
+  }
+}
