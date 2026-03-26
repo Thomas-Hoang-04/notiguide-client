@@ -1,0 +1,227 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /*noinspection CssUnresolvedCustomProperty*/
+  --font-sans: var(--font-be-vietnam-pro);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-action: var(--action);
+  --color-action-hover: var(--action-hover);
+  --color-action-foreground: var(--action-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-disabled-surface: var(--disabled-surface);
+  --color-disabled-text: var(--disabled-text);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ── Override default Tailwind breakpoints with mobile-first system ── */
+@theme {
+  --breakpoint-sm: initial;
+  --breakpoint-md: initial;
+  --breakpoint-lg: initial;
+
+  --breakpoint-xs: 22.5rem;
+  --breakpoint-s: 24.375rem;
+  --breakpoint-m: 26.875rem;
+  --breakpoint-l: 37.5rem;
+  --breakpoint-xl: 48rem;
+  --breakpoint-2xl: 64rem;
+}
+
+/* ── Light Theme ─────────────────────────────────────────── */
+:root {
+  --background: #f8fafc;
+  --foreground: #0c1324;
+  --surface: #ffffff;
+
+  --gradient-page: linear-gradient(
+    135deg,
+    #f0f9ff 0%,
+    #ccfbf1 35%,
+    #e0f2fe 65%,
+    #f0fdfa 100%
+  );
+  --gradient-primary: linear-gradient(135deg, #0d9488, #0ea5e9);
+  --gradient-action: linear-gradient(135deg, #f97316, #eab308);
+  --gradient-success: linear-gradient(135deg, #10b981, #0d9488);
+  --gradient-danger: linear-gradient(135deg, #e11d48, #f97316);
+  --glass-sheen: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0) 50%
+  );
+  --glass-edge: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0) 4px
+  );
+  --glass-glow-primary: radial-gradient(
+    circle at 30% 20%,
+    rgba(13, 148, 136, 0.08),
+    transparent 60%
+  );
+  --glass-glow-action: radial-gradient(
+    circle at 70% 30%,
+    rgba(249, 115, 22, 0.06),
+    transparent 60%
+  );
+
+  --primary: #0d9488;
+  --primary-foreground: #ffffff;
+  --primary-hover: #0f766e;
+
+  --action: #f97316;
+  --action-hover: #c2410c;
+  --action-foreground: #ffffff;
+
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #0d9488;
+
+  --success: #10b981;
+  --success-foreground: #ffffff;
+  --warning: #d97706;
+  --warning-foreground: #422006;
+  --destructive: #e11d48;
+  --destructive-foreground: #ffffff;
+
+  --disabled-surface: #f1f5f9;
+  --disabled-text: #94a3b8;
+
+  /* shadcn semantic mappings */
+  --card: #ffffff;
+  --card-foreground: #0c1324;
+  --popover: #ffffff;
+  --popover-foreground: #0c1324;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0c1324;
+  --accent: #f1f5f9;
+  --accent-foreground: #0c1324;
+
+  --radius: 0.625rem;
+}
+
+/* ── Dark Theme ──────────────────────────────────────────── */
+.dark {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --surface: #28354a;
+
+  --gradient-page: linear-gradient(
+    135deg,
+    #0f172a 0%,
+    #0c2d48 40%,
+    #0a2f2a 70%,
+    #0f172a 100%
+  );
+  --gradient-primary: linear-gradient(135deg, #2dd4be, #38bdf8);
+  --gradient-action: linear-gradient(135deg, #fb923c, #fde047);
+  --gradient-success: linear-gradient(135deg, #34d399, #2dd4be);
+  --gradient-danger: linear-gradient(135deg, #fb7185, #fb923c);
+  --glass-sheen: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0) 50%
+  );
+  --glass-edge: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0) 4px
+  );
+  --glass-glow-primary: radial-gradient(
+    circle at 30% 20%,
+    rgba(45, 212, 190, 0.12),
+    transparent 60%
+  );
+  --glass-glow-action: radial-gradient(
+    circle at 70% 30%,
+    rgba(251, 146, 60, 0.1),
+    transparent 60%
+  );
+
+  --primary: #2dd4be;
+  --primary-foreground: #0f172a;
+  --primary-hover: #5eead4;
+
+  --action: #fb923c;
+  --action-hover: #fdba74;
+  --action-foreground: #0f172a;
+
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+
+  --border: #3e5270;
+  --input: #3e5270;
+  --ring: #2dd4be;
+
+  --success: #34d399;
+  --success-foreground: #0f172a;
+  --warning: #fde047;
+  --warning-foreground: #422006;
+  --destructive: #fb7185;
+  --destructive-foreground: #0f172a;
+
+  --disabled-surface: #1e293b;
+  --disabled-text: #64748b;
+
+  --card: #28354a;
+  --card-foreground: #f8fafc;
+  --popover: #28354a;
+  --popover-foreground: #f8fafc;
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+  --accent: #1e293b;
+  --accent-foreground: #f8fafc;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background font-sans text-foreground;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-page {
+    background: var(--gradient-page);
+  }
+}
