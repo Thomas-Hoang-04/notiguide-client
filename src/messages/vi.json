@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "title": "NotiGuide",
+    "description": "Xếp hàng và theo dõi trạng thái vé của bạn"
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "retry": "Thử lại",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "close": "Đóng",
+    "back": "Quay lại",
+    "error": "Đã xảy ra lỗi",
+    "appName": "NotiGuide",
+    "skipToContent": "Chuyển đến nội dung chính"
+  },
+  "store": {
+    "storeInfo": "Thông tin cửa hàng",
+    "address": "Địa chỉ",
+    "queueStatus": "Trạng thái hàng đợi",
+    "ticketsWaiting": "{count} lượt đang chờ",
+    "noOneWaiting": "Hàng chờ đang trống — bạn sẽ là người tiếp theo!",
+    "storeNotFound": "Không tìm thấy cửa hàng",
+    "storeNotFoundDescription": "Cửa hàng này không tồn tại hoặc đã bị xóa.",
+    "storeInactive": "Cửa hàng hiện không nhận khách mới",
+    "storeClosed": "Cửa hàng không khả dụng",
+    "queuePaused": "Hàng đợi tạm dừng",
+    "queuePausedDescription": "Vui lòng quay lại sớm.",
+    "queueFull": "Hàng đợi đầy",
+    "queueFullDescription": "Vui lòng thử lại sau.",
+    "poweredBy": "Vận hành bởi NotiGuide"
+  },
+  "queue": {
+    "joinQueue": "Xếp hàng",
+    "joining": "Đang xếp hàng...",
+    "joinSuccess": "Lấy vé thành công!",
+    "hasActiveTicket": "Bạn đã có vé (#{number})",
+    "viewActiveTicket": "Xem vé của bạn",
+    "joinAnyway": "Lấy vé lại",
+    "yourTicket": "Vé Của Bạn",
+    "ticketNumber": "Số vé",
+    "position": "Vị trí trong hàng đợi",
+    "positionDisplay": "Thứ #{position} trong hàng",
+    "peopleAhead": "Có {count} người trước bạn!",
+    "noPeopleAhead": "Bạn là người tiếp theo!",
+    "estimatedWait": "Thời gian chờ dự kiến",
+    "estimatedWaitMinutes": "~{minutes} phút",
+    "waitUnavailable": "Không có ước tính",
+    "status": "Trạng thái",
+    "issuedAt": "Phát vé lúc",
+    "calledAt": "Gọi lúc",
+    "lastUpdated": "Đã cập nhật {time} trước",
+    "cancelTicket": "Hủy vé",
+    "cancelConfirmTitle": "Hủy vé của bạn?",
+    "cancelConfirmMessage": "Bạn sẽ mất vị trí trong hàng đợi.",
+    "keepTicket": "Giữ vé",
+    "yesCancel": "Có, hủy",
+    "cancelSuccess": "Vé của bạn đã được hủy",
+    "joinAgain": "Lấy vé lại",
+    "calledAlert": "Lượt của bạn đã đến!",
+    "calledAlertDescription": "Vui lòng đến quầy phục vụ",
+    "calledDismiss": "Đã hiểu",
+    "servedMessage": "Bạn đã được phục vụ. Cảm ơn!",
+    "cancelledMessage": "Vé của bạn đã bị hủy.",
+    "ticketSkippedMessage": "Vé của bạn đã bị bỏ qua. Bạn có thể xếp hàng lại.",
+    "ticketRequeuedMessage": "Bạn đã được xếp lại vào hàng. Vui lòng chờ lượt của bạn.",
+    "ticketExpired": "Vé này không còn hoạt động",
+    "ticketExpiredDescription": "Vé có thể đã hết hạn hoặc đã được phục vụ. Vui lòng lấy vé lại nếu cần.",
+    "refreshStatus": "Làm mới"
+  },
+  "status": {
+    "waiting": "Đang chờ",
+    "called": "Đã gọi",
+    "served": "Đã phục vụ",
+    "cancelled": "Đã hủy",
+    "skipped": "Đã bỏ qua",
+    "requeued": "Đã xếp lại",
+    "unknown": "Không rõ"
+  },
+  "errors": {
+    "networkError": "Mất kết nối. Vui lòng kiểm tra kết nối mạng.",
+    "rateLimited": "Quá nhiều yêu cầu. Vui lòng đợi {seconds} giây.",
+    "serverError": "Lỗi máy chủ. Vui lòng thử lại sau.",
+    "storeNotFound": "Không tìm thấy cửa hàng",
+    "ticketNotFound": "Không tìm thấy vé",
+    "reconnecting": "Đang kết nối lại...",
+    "offline": "Ngoại tuyến — cập nhật {time} trước"
+  },
+  "notification": {
+    "promptMessage": "Bật thông báo để biết khi đến lượt, kể cả khi tắt màn hình.",
+    "enable": "Bật",
+    "enabling": "Đang bật...",
+    "denied": "Thông báo đã bị từ chối. Bạn có thể bật lại trong cài đặt trình duyệt.",
+    "positionAlertTitle": "Sắp đến bạn!",
+    "positionAlertBody": "Bạn đang ở vị trí {position} tại {storeName}.",
+    "youreNextTitle": "Sắp đến lượt bạn!",
+    "youreNextBody": "Hãy chuẩn bị tại {storeName}."
+  },
+  "theme": {
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Hệ thống"
+  },
+  "language": {
+    "switchTo": "Chuyển ngôn ngữ"
+  },
+  "time": {
+    "justNow": "Vừa xong",
+    "seconds": "{count}s",
+    "minutes": "{count}m"
+  }
+}

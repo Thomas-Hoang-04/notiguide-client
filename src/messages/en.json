@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "title": "NotiGuide",
+    "description": "Join the queue and track your ticket status"
+  },
+  "common": {
+    "loading": "Loading...",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "error": "Something went wrong",
+    "appName": "NotiGuide",
+    "skipToContent": "Skip to content"
+  },
+  "store": {
+    "storeInfo": "Store Information",
+    "address": "Address",
+    "queueStatus": "Queue Status",
+    "ticketsWaiting": "{count} tickets waiting",
+    "noOneWaiting": "No one is in line — you'll be next!",
+    "storeNotFound": "Store not found",
+    "storeNotFoundDescription": "This store does not exist or has been removed.",
+    "storeInactive": "This store is not currently accepting new tickets",
+    "storeClosed": "Store Unavailable",
+    "queuePaused": "Queue is temporarily paused",
+    "queuePausedDescription": "Please check back shortly.",
+    "queueFull": "Queue is full",
+    "queueFullDescription": "Please try again later.",
+    "poweredBy": "Powered by NotiGuide"
+  },
+  "queue": {
+    "joinQueue": "Join Queue",
+    "joining": "Joining...",
+    "joinSuccess": "You've joined the queue!",
+    "hasActiveTicket": "You already have an active ticket (#{number})",
+    "viewActiveTicket": "View your ticket",
+    "joinAnyway": "Join again",
+    "yourTicket": "Your Ticket",
+    "ticketNumber": "Ticket Number",
+    "position": "Position in Queue",
+    "positionDisplay": "#{position} in line",
+    "peopleAhead": "{count} people ahead of you!",
+    "noPeopleAhead": "You're next!",
+    "estimatedWait": "Estimated Wait",
+    "estimatedWaitMinutes": "~{minutes} min",
+    "waitUnavailable": "Estimate not available",
+    "status": "Status",
+    "issuedAt": "Issued at",
+    "calledAt": "Called at",
+    "lastUpdated": "Last updated {time} ago",
+    "cancelTicket": "Cancel Ticket",
+    "cancelConfirmTitle": "Cancel your ticket?",
+    "cancelConfirmMessage": "You will lose your position in the queue.",
+    "keepTicket": "Keep my ticket",
+    "yesCancel": "Yes, cancel",
+    "cancelSuccess": "Your ticket has been cancelled",
+    "joinAgain": "Join Queue Again",
+    "calledAlert": "Your number is being called!",
+    "calledAlertDescription": "Please proceed to the counter",
+    "calledDismiss": "Got it",
+    "servedMessage": "You have been served. Thank you!",
+    "cancelledMessage": "Your ticket has been cancelled.",
+    "ticketSkippedMessage": "Your ticket was skipped. You may re-join the queue.",
+    "ticketRequeuedMessage": "You've been moved back in the queue. Please wait for your turn.",
+    "ticketExpired": "This ticket is no longer active",
+    "ticketExpiredDescription": "Your ticket may have expired or been completed. Please join the queue again if needed.",
+    "refreshStatus": "Refresh Status"
+  },
+  "status": {
+    "waiting": "Waiting",
+    "called": "Called",
+    "served": "Served",
+    "cancelled": "Cancelled",
+    "skipped": "Skipped",
+    "requeued": "Re-queued",
+    "unknown": "Unknown"
+  },
+  "errors": {
+    "networkError": "Connection lost. Please check your internet.",
+    "rateLimited": "Too many requests. Please wait {seconds} seconds.",
+    "serverError": "Server error. Please try again later.",
+    "storeNotFound": "Store not found",
+    "ticketNotFound": "Ticket not found",
+    "reconnecting": "Reconnecting...",
+    "offline": "Offline — last updated {time} ago"
+  },
+  "notification": {
+    "promptMessage": "Enable notifications to know when your number is called, even with the screen off.",
+    "enable": "Enable",
+    "enabling": "Enabling...",
+    "denied": "Notifications are blocked. You can enable them in your browser settings.",
+    "positionAlertTitle": "Almost there!",
+    "positionAlertBody": "You're #{position} in line at {storeName}.",
+    "youreNextTitle": "You're next!",
+    "youreNextBody": "Please head to {storeName}."
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "language": {
+    "switchTo": "Switch language"
+  },
+  "time": {
+    "justNow": "Just now",
+    "seconds": "{count}s",
+    "minutes": "{count}m"
+  }
+}
