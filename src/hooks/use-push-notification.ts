@@ -4,7 +4,11 @@ import { getToken } from "firebase/messaging";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { registerFcmToken } from "@/features/queue/api";
-import { firebaseConfig, getFirebaseMessaging } from "@/lib/firebase";
+import {
+  firebaseConfig,
+  getFirebaseMessaging,
+  hasFirebaseMessagingConfig,
+} from "@/lib/firebase";
 
 type PushPermissionState = "prompt" | "granted" | "denied" | "unsupported";
 
@@ -13,6 +17,11 @@ interface UsePushNotificationResult {
   requestPermission: () => Promise<void>;
   isRegistering: boolean;
 }
+
+const hasPushNotificationConfig =
+  hasFirebaseMessagingConfig() &&
+  typeof process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY === "string" &&
+  process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY.trim().length > 0;
 
 export function usePushNotification(
   storeId: string,
@@ -36,13 +45,18 @@ export function usePushNotification(
       return;
     }
 
+    if (!hasPushNotificationConfig) {
+      setPermissionState("unsupported");
+      return;
+    }
+
     setPermissionState(
       Notification.permission as "prompt" | "granted" | "denied",
     );
   }, []);
 
   const registerToken = useCallback(async () => {
-    if (registeredRef.current) return;
+    if (registeredRef.current || !hasPushNotificationConfig) return;
 
     try {
       setIsRegistering(true);
@@ -104,29 +118,8 @@ async function registerServiceWorker(
   locale: string,
 ): Promise<ServiceWorkerRegistration | null> {
   try {
-    const registration = await navigator.serviceWorker.register(
-      "/firebase-messaging-sw.js",
-    );
-
-    // Wait for the service worker to activate
-    const sw =
-      registration.active || registration.waiting || registration.installing;
-
-    if (sw?.state !== "activated") {
-      await new Promise<void>((resolve) => {
-        const target = sw ?? registration.installing;
-        if (!target) {
-          resolve();
-          return;
-        }
-        target.addEventListener("statechange", function handler() {
-          if (target.state === "activated") {
-            target.removeEventListener("statechange", handler);
-            resolve();
-          }
-        });
-      });
-    }
+    await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+    const registration = await navigator.serviceWorker.ready;
 
     // Send Firebase config and locale to the service worker
     registration.active?.postMessage({

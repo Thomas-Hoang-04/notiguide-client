@@ -38,72 +38,89 @@ function getTranslation(locale) {
 
 // Receive Firebase config from the main thread and initialize
 self.addEventListener("message", (event) => {
-  if (event.data?.type === "FIREBASE_CONFIG" && !messaging) {
-    currentLocale = event.data.locale || "en";
-    firebase.initializeApp(event.data.config);
-    messaging = firebase.messaging();
+  if (event.data?.type !== "FIREBASE_CONFIG") {
+    return;
+  }
 
-    messaging.onBackgroundMessage((payload) => {
-      const data = payload.data || {};
-      const t = getTranslation(currentLocale);
+  currentLocale = event.data.locale || "en";
 
-      // POSITION_ALERT: proactive "you're almost up" notification
-      if (data.type === "POSITION_ALERT") {
-        const position = parseInt(data.position, 10);
-        const storeName = data.storeName || "";
+  if (messaging) {
+    return;
+  }
 
-        let title;
-        let body;
-        if (position === 1) {
-          title = t.youreNext;
-          body = t.youreNextBody.replace("{storeName}", storeName);
-        } else {
-          title = t.positionAhead.replace("{position}", String(position));
-          body = t.positionBody
-            .replace("{position}", String(position))
-            .replace("{storeName}", storeName);
-        }
+  const config = event.data.config;
+  if (
+    !config?.apiKey ||
+    !config?.projectId ||
+    !config?.messagingSenderId ||
+    !config?.appId
+  ) {
+    return;
+  }
 
-        return self.registration.showNotification(title, {
-          body,
-          icon: "/icons/notiguide-192.png",
-          badge: "/icons/notiguide-192.png",
-          tag: `position-alert-${data.ticketId}`,
-          data: {
-            url:
-              data.storeId && data.ticketId
-                ? `/store/${data.storeId}/ticket/${data.ticketId}`
-                : "/",
-          },
-        });
+  firebase.initializeApp(config);
+  messaging = firebase.messaging();
+
+  messaging.onBackgroundMessage((payload) => {
+    const data = payload.data || {};
+    const t = getTranslation(currentLocale);
+
+    // POSITION_ALERT: proactive "you're almost up" notification
+    if (data.type === "POSITION_ALERT") {
+      const position = parseInt(data.position, 10);
+      const storeName = data.storeName || "";
+
+      let title;
+      let body;
+      if (position === 1) {
+        title = t.youreNext;
+        body = t.youreNextBody.replace("{storeName}", storeName);
+      } else {
+        title = t.positionAhead.replace("{position}", String(position));
+        body = t.positionBody
+          .replace("{position}", String(position))
+          .replace("{storeName}", storeName);
       }
 
-      // TICKET_CALLED: existing "your number is called" notification
-      const title = t.title;
-      const ticketNumber = data.ticketNumber || "?";
-      let body = `${t.ticket} #${ticketNumber}`;
-      if (data.counterId) {
-        body += ` — ${t.counter} ${data.counterId}`;
-      }
-
-      const notificationOptions = {
+      return self.registration.showNotification(title, {
         body,
         icon: "/icons/notiguide-192.png",
         badge: "/icons/notiguide-192.png",
-        tag: `ticket-called-${data.ticketId}`,
-        renotify: true,
-        requireInteraction: true,
+        tag: `position-alert-${data.ticketId}`,
         data: {
           url:
             data.storeId && data.ticketId
               ? `/store/${data.storeId}/ticket/${data.ticketId}`
               : "/",
         },
-      };
+      });
+    }
 
-      return self.registration.showNotification(title, notificationOptions);
-    });
-  }
+    // TICKET_CALLED: existing "your number is called" notification
+    const title = t.title;
+    const ticketNumber = data.ticketNumber || "?";
+    let body = `${t.ticket} #${ticketNumber}`;
+    if (data.counterId) {
+      body += ` — ${t.counter} ${data.counterId}`;
+    }
+
+    const notificationOptions = {
+      body,
+      icon: "/icons/notiguide-192.png",
+      badge: "/icons/notiguide-192.png",
+      tag: `ticket-called-${data.ticketId}`,
+      renotify: true,
+      requireInteraction: true,
+      data: {
+        url:
+          data.storeId && data.ticketId
+            ? `/store/${data.storeId}/ticket/${data.ticketId}`
+            : "/",
+      },
+    };
+
+    return self.registration.showNotification(title, notificationOptions);
+  });
 });
 
 // Handle notification click — open or focus the ticket page

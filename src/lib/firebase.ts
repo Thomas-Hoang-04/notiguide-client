@@ -10,8 +10,20 @@ export const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+export function hasFirebaseMessagingConfig(): boolean {
+  return [
+    firebaseConfig.apiKey,
+    firebaseConfig.projectId,
+    firebaseConfig.messagingSenderId,
+    firebaseConfig.appId,
+  ].every(
+    (value): value is string =>
+      typeof value === "string" && value.trim().length > 0,
+  );
+}
+
 function getApp(): FirebaseApp | null {
-  if (!firebaseConfig.apiKey || !firebaseConfig.projectId) return null;
+  if (!hasFirebaseMessagingConfig()) return null;
   return getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 }
 
