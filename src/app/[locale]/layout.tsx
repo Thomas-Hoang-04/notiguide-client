@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
-import { MockInit } from "@/__mocks__/mock-init"; // MOCK: remove for production
 import { routing } from "@/i18n/routing";
 import "@/styles/glass.css";
 import "@/styles/ticket.css";
@@ -89,7 +88,6 @@ export default async function LocaleLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <MockInit /> {/* MOCK: remove for production */}
             {children}
           </ThemeProvider>
         </NextIntlClientProvider>

@@ -23,6 +23,13 @@ import { useQueueSize, useStoreInfo } from "@/features/store/hooks";
 import { useTicketStorage } from "@/hooks/use-ticket-storage";
 import { useRouter } from "@/i18n/navigation";
 import { useTicketStore } from "@/store/ticket";
+import type { TicketStatus } from "@/types/queue";
+
+interface ActiveTicketSummary {
+  storeId: string;
+  ticketId: string;
+  number: string;
+}
 
 interface StorePageProps {
   params: Promise<{ storeId: string }>;
@@ -56,57 +63,91 @@ function StorePageContent({ storeId }: { storeId: string }) {
     error: joinError,
     rateLimitSeconds,
   } = useJoinQueue(storeId);
-  const ticketStore = useTicketStore();
+  const ticketStoreStoreId = useTicketStore((s) => s.storeId);
+  const ticketStoreTicketId = useTicketStore((s) => s.ticketId);
+  const ticketStoreTicketNumber = useTicketStore(
+    (s) => s.ticket?.number ?? null,
+  );
+  const ticketStoreStatus = useTicketStore((s) => s.status?.status ?? null);
   const { getStoredTicket } = useTicketStorage();
 
-  const [activeTicketNumber, setActiveTicketNumber] = useState<string | null>(
+  const [activeTicket, setActiveTicket] = useState<ActiveTicketSummary | null>(
     null,
   );
-  const [activeTicketId, setActiveTicketId] = useState<string | null>(null);
+  const [isTicketLookupReady, setIsTicketLookupReady] = useState(false);
   const isJoiningRef = useRef(false);
 
-  // Check for existing active ticket on mount
   useEffect(() => {
-    const stored = getStoredTicket(storeId);
-    if (stored) {
-      setActiveTicketNumber(stored.ticket.number);
-      setActiveTicketId(stored.ticketId);
-    } else if (ticketStore.hasActiveTicket(storeId)) {
-      setActiveTicketNumber(ticketStore.ticket?.number ?? null);
-      setActiveTicketId(ticketStore.ticketId);
+    if (storeInfo && storeInfo.publicId !== storeId) {
+      router.replace(`/store/${storeInfo.publicId}`);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only run on mount
+  }, [storeInfo, storeId, router]);
+
+  // Resolve any active ticket before allowing another join attempt.
+  useEffect(() => {
+    const persistedActiveTicket =
+      ticketStoreStoreId &&
+      ticketStoreTicketId &&
+      ticketStoreTicketNumber &&
+      !isTerminalStatus(ticketStoreStatus)
+        ? {
+            storeId: ticketStoreStoreId,
+            ticketId: ticketStoreTicketId,
+            number: ticketStoreTicketNumber,
+          }
+        : null;
+
+    const storedCurrentTicket = !ticketStoreTicketId
+      ? getStoredTicket(storeId)
+      : null;
+
+    setActiveTicket(
+      persistedActiveTicket ??
+        (storedCurrentTicket
+          ? {
+              storeId,
+              ticketId: storedCurrentTicket.ticketId,
+              number: storedCurrentTicket.ticket.number,
+            }
+          : null),
+    );
+    setIsTicketLookupReady(true);
   }, [
     storeId,
     getStoredTicket,
-    ticketStore.hasActiveTicket,
-    ticketStore.ticket?.number,
-    ticketStore.ticketId,
+    ticketStoreStoreId,
+    ticketStoreTicketId,
+    ticketStoreTicketNumber,
+    ticketStoreStatus,
   ]);
 
   // Handle successful join — redirect to ticket page (only after user-initiated join)
   useEffect(() => {
     if (
       isJoiningRef.current &&
-      ticketStore.storeId === storeId &&
-      ticketStore.ticketId &&
-      ticketStore.ticket
+      ticketStoreStoreId === storeId &&
+      ticketStoreTicketId &&
+      ticketStoreTicketNumber
     ) {
       isJoiningRef.current = false;
-      router.push(`/store/${storeId}/ticket/${ticketStore.ticketId}`);
+      router.push(`/store/${storeId}/ticket/${ticketStoreTicketId}`);
     }
   }, [
-    ticketStore.storeId,
-    ticketStore.ticketId,
-    ticketStore.ticket,
+    ticketStoreStoreId,
+    ticketStoreTicketId,
+    ticketStoreTicketNumber,
     storeId,
     router,
   ]);
 
-  // Handle join — if already had an active ticket, joining means user chose "join anyway"
   async function handleJoin() {
-    setActiveTicketNumber(null);
-    setActiveTicketId(null);
+    if (activeTicket) {
+      router.push(
+        `/store/${activeTicket.storeId}/ticket/${activeTicket.ticketId}`,
+      );
+      return;
+    }
+
     isJoiningRef.current = true;
     await join();
     // Redirect happens via the useEffect above
@@ -264,7 +305,7 @@ function StorePageContent({ storeId }: { storeId: string }) {
             </Card>
 
             {/* Active Ticket Banner */}
-            {activeTicketNumber && activeTicketId && (
+            {activeTicket && (
               <Card className="glass-card rounded-2xl border-primary/20">
                 <CardContent className="flex flex-col gap-3 pt-4 pb-4">
                   <div className="flex items-center gap-2">
@@ -274,36 +315,28 @@ function StorePageContent({ storeId }: { storeId: string }) {
                     />
                     <p className="text-sm font-medium">
                       {tQueue("hasActiveTicket", {
-                        number: activeTicketNumber,
+                        number: activeTicket.number,
                       })}
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      className="flex-1 rounded-xl"
-                      onClick={() =>
-                        router.push(
-                          `/store/${storeId}/ticket/${activeTicketId}`,
-                        )
-                      }
-                    >
-                      {tQueue("viewActiveTicket")}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="rounded-xl"
-                      onClick={handleJoin}
-                      disabled={isJoining}
-                    >
-                      {tQueue("joinAnyway")}
-                    </Button>
-                  </div>
+                  <Button
+                    className="rounded-xl"
+                    onClick={() =>
+                      router.push(
+                        `/store/${activeTicket.storeId}/ticket/${activeTicket.ticketId}`,
+                      )
+                    }
+                  >
+                    {tQueue("viewActiveTicket")}
+                  </Button>
                 </CardContent>
               </Card>
             )}
 
             {/* Join Queue Button */}
-            {!activeTicketNumber && (
+            {!isTicketLookupReady ? (
+              <Skeleton className="h-12 w-full rounded-xl xs:h-14" />
+            ) : !activeTicket ? (
               <JoinQueueButton
                 onJoin={handleJoin}
                 isJoining={isJoining}
@@ -317,7 +350,7 @@ function StorePageContent({ storeId }: { storeId: string }) {
                     queueSize >= storeInfo.maxQueueSize)
                 }
               />
-            )}
+            ) : null}
 
             {/* Join Error Messages */}
             <div aria-live="polite">
@@ -343,5 +376,11 @@ function StorePageContent({ storeId }: { storeId: string }) {
 
       <Footer />
     </div>
+  );
+}
+
+function isTerminalStatus(status: TicketStatus | null | undefined): boolean {
+  return (
+    status === "SERVED" || status === "CANCELLED" || status === "SKIPPED"
   );
 }

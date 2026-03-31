@@ -1,5 +1,5 @@
 export interface StorePublicInfoResponse {
-  id: string;
+  publicId: string;
   name: string;
   address: string | null;
   isActive: boolean;

@@ -13,6 +13,7 @@ import { CalledAlert } from "@/components/queue/called-alert";
 import { CancelTicketDialog } from "@/components/queue/cancel-ticket-dialog";
 import { NotificationPrompt } from "@/components/queue/notification-prompt";
 import { TicketCard } from "@/components/queue/ticket-card";
+import { TicketStatusBadge } from "@/components/queue/ticket-status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -23,6 +24,9 @@ import { useVibration } from "@/hooks/use-vibration";
 import { useRouter } from "@/i18n/navigation";
 import { getRelativeTime } from "@/lib/utils";
 import { useTicketStore } from "@/store/ticket";
+import type { TicketDto, TicketStatus } from "@/types/queue";
+
+type TerminalStateStatus = "served" | "cancelled" | "skipped" | "expired";
 
 interface TicketPageProps {
   params: Promise<{ storeId: string; ticketId: string }>;
@@ -58,18 +62,29 @@ function TicketPageContent({
   } = useTicketPolling(storeId, ticketId);
   const cancelTicket = useCancelTicket(storeId, ticketId);
   const pushNotification = usePushNotification(storeId, ticketId);
-  const { vibrateOnCalled } = useVibration();
+  const { vibrateOnCalled, stopContinuousVibration } = useVibration();
   const { getStoredTicket } = useTicketStorage();
+
+  const storedTicket = getStoredTicket(storeId)?.ticket ?? null;
+  const resolvedTicket = ticket ?? storedTicket;
 
   const [showCalledAlert, setShowCalledAlert] = useState(false);
   const [lastRelativeTime, setLastRelativeTime] = useState("");
+  const [ticketSnapshot, setTicketSnapshot] = useState<TicketDto | null>(
+    () => resolvedTicket,
+  );
+  const [terminalStatus, setTerminalStatus] = useState<TicketStatus | null>(
+    isTerminalTicketStatus(storedStatus?.status) ? storedStatus.status : null,
+  );
   // Seed from persisted status so re-mount doesn't re-trigger the called alert
-  const previousStatusRef = useRef<string | null>(storedStatus?.status ?? null);
+  const previousStatusRef = useRef<TicketStatus | null>(
+    storedStatus?.status ?? null,
+  );
   const [isRedirectingAfterCancel, setIsRedirectingAfterCancel] =
     useState(false);
 
-  // Resolve ticket from store or localStorage
-  const resolvedTicket = ticket ?? getStoredTicket(storeId)?.ticket ?? null;
+  const displayedTicket = resolvedTicket ?? ticketSnapshot;
+  const currentStatus = status?.status ?? storedStatus?.status ?? terminalStatus;
 
   // Detect CALLED transition — only fires on genuine WAITING→CALLED change
   useEffect(() => {
@@ -77,8 +92,29 @@ function TicketPageContent({
       setShowCalledAlert(true);
       vibrateOnCalled();
     }
+
+    if (status?.status !== "CALLED") {
+      stopContinuousVibration();
+    }
+
+    if (isTerminalTicketStatus(status?.status)) {
+      setTerminalStatus(status.status);
+    }
+
     previousStatusRef.current = status?.status ?? null;
-  }, [status?.status, vibrateOnCalled]);
+  }, [status?.status, stopContinuousVibration, vibrateOnCalled]);
+
+  useEffect(() => {
+    if (resolvedTicket) {
+      setTicketSnapshot(resolvedTicket);
+    }
+  }, [resolvedTicket]);
+
+  useEffect(() => {
+    if (isTerminalTicketStatus(storedStatus?.status)) {
+      setTerminalStatus(storedStatus.status);
+    }
+  }, [storedStatus?.status]);
 
   // Update relative time display
   useEffect(() => {
@@ -114,25 +150,26 @@ function TicketPageContent({
 
   // CalledAlert dismiss
   function handleDismissAlert() {
+    stopContinuousVibration();
     setShowCalledAlert(false);
   }
 
   // Terminal states
-  const isServed = status?.status === "SERVED";
-  const isCancelled = status?.status === "CANCELLED";
-  const isSkipped = status?.status === "SKIPPED";
+  const isServed = currentStatus === "SERVED";
+  const isCancelled = currentStatus === "CANCELLED";
+  const isSkipped = currentStatus === "SKIPPED";
   const isExpired = pollingError === "expired";
   const isTerminal = isServed || isCancelled || isSkipped || isExpired;
   const canCancel =
-    status?.status === "WAITING" ||
-    status?.status === "CALLED" ||
-    status?.status === "REQUEUED";
+    currentStatus === "WAITING" ||
+    currentStatus === "CALLED" ||
+    currentStatus === "REQUEUED";
 
   // Called Alert overlay
-  if (showCalledAlert && resolvedTicket) {
+  if (showCalledAlert && displayedTicket) {
     return (
       <CalledAlert
-        ticketNumber={resolvedTicket.number}
+        ticketNumber={displayedTicket.number}
         onDismiss={handleDismissAlert}
       />
     );
@@ -158,16 +195,7 @@ function TicketPageContent({
             </h1>
 
             {/* Ticket Card */}
-            {!resolvedTicket || !status ? (
-              <Card className="glass-card glass-card-elevated rounded-2xl">
-                <CardContent className="flex flex-col items-center gap-4 pt-6 pb-6">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-12 w-32" />
-                  <Skeleton className="h-5 w-20" />
-                  <Skeleton className="h-16 w-full" />
-                </CardContent>
-              </Card>
-            ) : isTerminal ? (
+            {isTerminal ? (
               <TerminalState
                 status={
                   isServed
@@ -179,9 +207,19 @@ function TicketPageContent({
                         : "expired"
                 }
                 storeId={storeId}
+                ticketNumber={displayedTicket?.number ?? null}
               />
+            ) : !displayedTicket || !status ? (
+              <Card className="glass-card glass-card-elevated rounded-2xl">
+                <CardContent className="flex flex-col items-center gap-4 pt-6 pb-6">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-12 w-32" />
+                  <Skeleton className="h-5 w-20" />
+                  <Skeleton className="h-16 w-full" />
+                </CardContent>
+              </Card>
             ) : (
-              <TicketCard ticket={resolvedTicket} status={status} />
+              <TicketCard ticket={displayedTicket} status={status} />
             )}
 
             {/* Push Notification Prompt */}
@@ -246,9 +284,11 @@ function TicketPageContent({
 function TerminalState({
   status,
   storeId,
+  ticketNumber,
 }: {
-  status: "served" | "cancelled" | "skipped" | "expired";
+  status: TerminalStateStatus;
   storeId: string;
+  ticketNumber: string | null;
 }) {
   const t = useTranslations("queue");
   const router = useRouter();
@@ -257,37 +297,50 @@ function TerminalState({
     served: {
       icon: CheckCircle2Icon,
       iconClass: "text-success",
-      message: t("servedMessage"),
+      title: t("ticketCompletedTitle"),
+      description: t("ticketCompletedDescription"),
     },
     cancelled: {
       icon: XCircleIcon,
       iconClass: "text-muted-foreground",
-      message: t("cancelledMessage"),
+      title: t("ticketCancelledTitle"),
+      description: t("ticketCancelledDescription"),
     },
     skipped: {
       icon: AlertCircleIcon,
       iconClass: "text-destructive",
-      message: t("ticketSkippedMessage"),
+      title: t("ticketSkippedTitle"),
+      description: t("ticketSkippedDescription"),
     },
     expired: {
       icon: AlertCircleIcon,
       iconClass: "text-muted-foreground",
-      message: t("ticketExpired"),
+      title: t("ticketExpiredTitle"),
+      description: t("ticketExpiredDescription"),
     },
   };
 
-  const { icon: Icon, iconClass, message } = config[status];
+  const { icon: Icon, iconClass, title, description } = config[status];
+  const badgeStatus =
+    status === "expired" ? null : TERMINAL_STATUS_BADGE_MAP[status];
 
   return (
     <Card className="glass-card glass-card-elevated rounded-2xl">
       <CardContent className="flex flex-col items-center gap-4 pt-6 pb-6 text-center status-transition">
         <Icon aria-hidden="true" className={`size-12 ${iconClass}`} />
-        <p className="text-base font-medium">{message}</p>
-        {status === "expired" && (
+        {ticketNumber && (
           <p className="text-sm text-muted-foreground">
-            {t("ticketExpiredDescription")}
+            {t("ticketNumber")}{" "}
+            <span className="font-semibold text-foreground">
+              #{ticketNumber}
+            </span>
           </p>
         )}
+        {badgeStatus && <TicketStatusBadge status={badgeStatus} />}
+        <h2 className="text-lg font-semibold">{title}</h2>
+        <p className="max-w-sm text-sm text-muted-foreground">
+          {description}
+        </p>
         <Button
           className="h-10 rounded-xl"
           onClick={() => router.push(`/store/${storeId}`)}
@@ -296,5 +349,22 @@ function TerminalState({
         </Button>
       </CardContent>
     </Card>
+  );
+}
+
+const TERMINAL_STATUS_BADGE_MAP: Record<
+  Exclude<TerminalStateStatus, "expired">,
+  TicketStatus
+> = {
+  served: "SERVED",
+  cancelled: "CANCELLED",
+  skipped: "SKIPPED",
+};
+
+function isTerminalTicketStatus(
+  status: TicketStatus | null | undefined,
+): status is "SERVED" | "CANCELLED" | "SKIPPED" {
+  return (
+    status === "SERVED" || status === "CANCELLED" || status === "SKIPPED"
   );
 }

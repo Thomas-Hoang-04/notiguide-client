@@ -40,8 +40,8 @@ export function useJoinQueue(storeId: string): UseJoinQueueResult {
       setError(null);
       setRateLimitSeconds(null);
       const response = await joinQueueApi(storeId);
-      setTicket(storeId, response.ticket);
-      storeTicket(storeId, response.ticket);
+      setTicket(response.storeId, response.ticket);
+      storeTicket(response.storeId, response.ticket);
       vibrateOnJoinSuccess();
     } catch (err) {
       if (err instanceof RateLimitError) {
