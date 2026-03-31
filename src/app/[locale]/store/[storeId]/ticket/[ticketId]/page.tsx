@@ -84,7 +84,8 @@ function TicketPageContent({
     useState(false);
 
   const displayedTicket = resolvedTicket ?? ticketSnapshot;
-  const currentStatus = status?.status ?? storedStatus?.status ?? terminalStatus;
+  const currentStatus =
+    status?.status ?? storedStatus?.status ?? terminalStatus;
 
   // Detect CALLED transition — only fires on genuine WAITING→CALLED change
   useEffect(() => {
@@ -338,9 +339,7 @@ function TerminalState({
         )}
         {badgeStatus && <TicketStatusBadge status={badgeStatus} />}
         <h2 className="text-lg font-semibold">{title}</h2>
-        <p className="max-w-sm text-sm text-muted-foreground">
-          {description}
-        </p>
+        <p className="max-w-sm text-sm text-muted-foreground">{description}</p>
         <Button
           className="h-10 rounded-xl"
           onClick={() => router.push(`/store/${storeId}`)}
@@ -364,7 +363,5 @@ const TERMINAL_STATUS_BADGE_MAP: Record<
 function isTerminalTicketStatus(
   status: TicketStatus | null | undefined,
 ): status is "SERVED" | "CANCELLED" | "SKIPPED" {
-  return (
-    status === "SERVED" || status === "CANCELLED" || status === "SKIPPED"
-  );
+  return status === "SERVED" || status === "CANCELLED" || status === "SKIPPED";
 }

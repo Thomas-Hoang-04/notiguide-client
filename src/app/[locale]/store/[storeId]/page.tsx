@@ -380,7 +380,5 @@ function StorePageContent({ storeId }: { storeId: string }) {
 }
 
 function isTerminalStatus(status: TicketStatus | null | undefined): boolean {
-  return (
-    status === "SERVED" || status === "CANCELLED" || status === "SKIPPED"
-  );
+  return status === "SERVED" || status === "CANCELLED" || status === "SKIPPED";
 }
