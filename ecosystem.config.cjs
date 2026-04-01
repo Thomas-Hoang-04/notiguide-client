@@ -1,14 +1,16 @@
+const path = require("node:path");
+
 module.exports = {
   apps: [
     {
       name: "notiguide-client",
-      script: "node_modules/.bin/next",
-      args: "start -p 3001",
+      cwd: path.join(__dirname, ".next/standalone"),
+      script: "server.js",
       instances: 2,
       exec_mode: "cluster",
       env: {
         NODE_ENV: "production",
-        PORT: 3001,
+        PORT: 2304,
       },
     },
   ],
