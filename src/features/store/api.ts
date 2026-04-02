@@ -1,5 +1,9 @@
 import { apiFetch } from "@/lib/api";
-import type { QueueSizeResponse, StorePublicInfoResponse } from "@/types/store";
+import type {
+  QueueSizeResponse,
+  ServiceTypePublicDto,
+  StorePublicInfoResponse,
+} from "@/types/store";
 
 export function getStoreInfo(
   storeId: string,
@@ -9,4 +13,12 @@ export function getStoreInfo(
 
 export function getQueueSize(storeId: string): Promise<QueueSizeResponse> {
   return apiFetch<QueueSizeResponse>(`/api/queue/public/${storeId}/size`);
+}
+
+export function listActiveServiceTypes(
+  storeId: string,
+): Promise<ServiceTypePublicDto[]> {
+  return apiFetch<ServiceTypePublicDto[]>(
+    `/api/queue/public/${storeId}/service-types`,
+  );
 }

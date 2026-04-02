@@ -17,9 +17,20 @@ import { StoreClosedBanner } from "@/components/store/store-closed-banner";
 import { StoreHeader } from "@/components/store/store-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useJoinQueue } from "@/features/queue/hooks";
-import { useQueueSize, useStoreInfo } from "@/features/store/hooks";
+import {
+  useQueueSize,
+  useServiceTypes,
+  useStoreInfo,
+} from "@/features/store/hooks";
 import { useTicketStorage } from "@/hooks/use-ticket-storage";
 import { useRouter } from "@/i18n/navigation";
 import { useTicketStore } from "@/store/ticket";
@@ -57,12 +68,26 @@ function StorePageContent({ storeId }: { storeId: string }) {
     storeId,
     !!storeInfo?.isActive,
   );
+  const { serviceTypes } = useServiceTypes(storeId);
+  const [selectedServiceTypeId, setSelectedServiceTypeId] = useState<
+    string | undefined
+  >(undefined);
+
+  // Auto-select first service type once loaded
+  useEffect(() => {
+    if (serviceTypes.length > 0 && selectedServiceTypeId === undefined) {
+      setSelectedServiceTypeId(serviceTypes[0].id);
+    }
+  }, [serviceTypes, selectedServiceTypeId]);
+
+  const showServiceTypeSelector = serviceTypes.length > 1;
+
   const {
     join,
     isJoining,
     error: joinError,
     rateLimitSeconds,
-  } = useJoinQueue(storeId);
+  } = useJoinQueue(storeId, selectedServiceTypeId);
   const ticketStoreStoreId = useTicketStore((s) => s.storeId);
   const ticketStoreTicketId = useTicketStore((s) => s.ticketId);
   const ticketStoreTicketNumber = useTicketStore(
@@ -303,6 +328,51 @@ function StorePageContent({ storeId }: { storeId: string }) {
                 ) : null}
               </CardContent>
             </Card>
+
+            {/* Service Type Selection */}
+            {showServiceTypeSelector &&
+              !storeLoading &&
+              storeInfo?.isActive && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">
+                    {tQueue("selectService")}
+                  </p>
+                  <Select
+                    value={selectedServiceTypeId ?? ""}
+                    onValueChange={(value) => {
+                      setSelectedServiceTypeId(value ?? undefined);
+                    }}
+                  >
+                    <SelectTrigger className="h-11">
+                      <SelectValue
+                        placeholder={tQueue("selectServicePlaceholder")}
+                      >
+                        {(value: string | null) => {
+                          const match = serviceTypes.find(
+                            (st) => st.id === value,
+                          );
+                          return match ? match.name : null;
+                        }}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent
+                      align="start"
+                      alignItemWithTrigger={false}
+                      className="p-1.5"
+                    >
+                      {serviceTypes.map((st) => (
+                        <SelectItem
+                          key={st.id}
+                          value={st.id}
+                          className="py-2.5"
+                        >
+                          {st.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
             {/* Active Ticket Banner */}
             {activeTicket && (

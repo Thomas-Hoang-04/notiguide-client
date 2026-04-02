@@ -1,10 +1,17 @@
 import { apiFetch } from "@/lib/api";
 import type { IssueTicketResponse, TicketStatusResponse } from "@/types/queue";
 
-export function joinQueue(storeId: string): Promise<IssueTicketResponse> {
-  return apiFetch<IssueTicketResponse>(`/api/queue/public/${storeId}/tickets`, {
-    method: "POST",
-  });
+export function joinQueue(
+  storeId: string,
+  serviceTypeId?: string,
+): Promise<IssueTicketResponse> {
+  const params = serviceTypeId
+    ? `?serviceTypeId=${encodeURIComponent(serviceTypeId)}`
+    : "";
+  return apiFetch<IssueTicketResponse>(
+    `/api/queue/public/${storeId}/tickets${params}`,
+    { method: "POST" },
+  );
 }
 
 export function getTicketStatus(

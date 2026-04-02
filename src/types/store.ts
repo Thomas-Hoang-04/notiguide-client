@@ -10,3 +10,9 @@ export interface StorePublicInfoResponse {
 export interface QueueSizeResponse {
   queueSize: number;
 }
+
+export interface ServiceTypePublicDto {
+  id: string;
+  name: string;
+  prefix: string;
+}

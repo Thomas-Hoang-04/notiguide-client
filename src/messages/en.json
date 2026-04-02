@@ -31,6 +31,8 @@
     "poweredBy": "Powered by NotiGuide"
   },
   "queue": {
+    "selectService": "Select a service",
+    "selectServicePlaceholder": "Choose a service",
     "joinQueue": "Join Queue",
     "joining": "Joining...",
     "joinSuccess": "You've joined the queue!",

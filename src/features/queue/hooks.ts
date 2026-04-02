@@ -24,7 +24,10 @@ interface UseJoinQueueResult {
   rateLimitSeconds: number | null;
 }
 
-export function useJoinQueue(storeId: string): UseJoinQueueResult {
+export function useJoinQueue(
+  storeId: string,
+  serviceTypeId?: string,
+): UseJoinQueueResult {
   const [isJoining, setIsJoining] = useState(false);
   const [error, setError] = useState<
     "rateLimited" | "network" | "server" | null
@@ -39,7 +42,7 @@ export function useJoinQueue(storeId: string): UseJoinQueueResult {
       setIsJoining(true);
       setError(null);
       setRateLimitSeconds(null);
-      const response = await joinQueueApi(storeId);
+      const response = await joinQueueApi(storeId, serviceTypeId);
       setTicket(response.storeId, response.ticket);
       storeTicket(response.storeId, response.ticket);
       vibrateOnJoinSuccess();
@@ -55,7 +58,7 @@ export function useJoinQueue(storeId: string): UseJoinQueueResult {
     } finally {
       setIsJoining(false);
     }
-  }, [storeId, setTicket, storeTicket, vibrateOnJoinSuccess]);
+  }, [storeId, serviceTypeId, setTicket, storeTicket, vibrateOnJoinSuccess]);
 
   return { join, isJoining, error, rateLimitSeconds };
 }

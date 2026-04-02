@@ -3,8 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { POLLING_INTERVALS } from "@/lib/constants";
 import { NetworkError, NotFoundError } from "@/types/api";
-import type { StorePublicInfoResponse } from "@/types/store";
-import { getQueueSize, getStoreInfo } from "./api";
+import type {
+  ServiceTypePublicDto,
+  StorePublicInfoResponse,
+} from "@/types/store";
+import { getQueueSize, getStoreInfo, listActiveServiceTypes } from "./api";
 
 interface UseStoreInfoResult {
   storeInfo: StorePublicInfoResponse | null;
@@ -119,4 +122,36 @@ export function useQueueSize(
   }, [enabled, fetchSize]);
 
   return { queueSize, isLoading, refresh };
+}
+
+interface UseServiceTypesResult {
+  serviceTypes: ServiceTypePublicDto[];
+  isLoading: boolean;
+}
+
+export function useServiceTypes(storeId: string): UseServiceTypesResult {
+  const [serviceTypes, setServiceTypes] = useState<ServiceTypePublicDto[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetch() {
+      try {
+        const types = await listActiveServiceTypes(storeId);
+        if (!cancelled) setServiceTypes(types);
+      } catch {
+        // Silently ignore — service type selection is supplementary
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+
+    void fetch();
+    return () => {
+      cancelled = true;
+    };
+  }, [storeId]);
+
+  return { serviceTypes, isLoading };
 }

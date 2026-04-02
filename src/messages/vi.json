@@ -31,6 +31,8 @@
     "poweredBy": "Vận hành bởi NotiGuide"
   },
   "queue": {
+    "selectService": "Chọn dịch vụ",
+    "selectServicePlaceholder": "Chọn dịch vụ",
     "joinQueue": "Xếp hàng",
     "joining": "Đang xếp hàng...",
     "joinSuccess": "Lấy vé thành công!",
