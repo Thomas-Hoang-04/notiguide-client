@@ -5,6 +5,8 @@ export interface StorePublicInfoResponse {
   isActive: boolean;
   queueState: string;
   maxQueueSize: number;
+  canonicalId: string;
+  matchedSlug: string;
 }
 
 export interface QueueSizeResponse {

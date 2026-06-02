@@ -1,3 +1,5 @@
+// noinspection HtmlUnknownAnchorTarget
+
 import type { Metadata, Viewport } from "next";
 import { Be_Vietnam_Pro } from "next/font/google";
 import { notFound } from "next/navigation";
@@ -5,6 +7,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
 import { routing } from "@/i18n/routing";
+import { SITE_URL } from "@/lib/constants";
 import "@/styles/glass.css";
 import "@/styles/ticket.css";
 import "@/styles/called-alert.css";
@@ -38,6 +41,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "meta" });
 
   return {
+    metadataBase: new URL(SITE_URL),
     title: t("title"),
     description: t("description"),
     icons: {
